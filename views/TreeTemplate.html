@@ -1,94 +1,89 @@
 <script>
     /* Load Left Side Navigation Menu */
+    var tree;
     var initializeTree = function() {
-            $("#tree").fancytree({
-                checkbox: true,
-                selectMode: 2,
-                source: _getTreeMenuData,
-                extensions: ["filter"],
-                quicksearch: true,
-                filter: {
-                    autoApply: false, // Re-apply last filter if lazy data is loaded
-                    counter: false, // Show a badge with number of matching child nodes near parent icons
-                    fuzzy: false, // Match single characters in order, e.g. 'fb' will match 'FooBar'
-                    hideExpandedCounter: false, // Hide counter badge, when parent is expanded
-                    highlight: true, // Highlight matches by wrapping inside <mark> tags
-                    mode: "hide" // Hide unmatched nodes (pass "dimm" to grayout unmatched node instead)
-                },
-                activate: function(event, data) {
-                    //        alert("activate " + data.node);
-                },
-                select: function(event, data) {
-                    // Display list of selected nodes
-                    var selNodes = data.tree.getSelectedNodes();
-                    // convert to title/key array
-                    var selKeys = $.map(selNodes, function(node) {
-                        return "[" + node.key + "]: '" +
+        $("#tree").fancytree({
+            checkbox: true,
+            selectMode: 2,
+            source: _getTreeMenuData,
+            extensions: ["filter"],
+            quicksearch: true,
+            filter: {
+                autoApply: false, // Re-apply last filter if lazy data is loaded
+                counter: false, // Show a badge with number of matching child nodes near parent icons
+                fuzzy: false, // Match single characters in order, e.g. 'fb' will match 'FooBar'
+                hideExpandedCounter: false, // Hide counter badge, when parent is expanded
+                highlight: true, // Highlight matches by wrapping inside <mark> tags
+                mode: "hide" // Hide unmatched nodes (pass "dimm" to grayout unmatched node instead)
+            },
+            activate: function(event, data) {
+                //        alert("activate " + data.node);
+            },
+            select: function(event, data) {
+                // Display list of selected nodes
+                var selNodes = data.tree.getSelectedNodes();
+                // convert to title/key array
+                var selKeys = $.map(selNodes, function(node) {
+                    return "[" + node.key + "]: '" +
                             node.title + "'";
-                    });
-                    $("#echoSelection2").text(selKeys.join(", "));
-                },
-                click: function(event, data) {
-                    // We should not toggle, if target was "checkbox", because this
-                    // would result in double-toggle (i.e. no toggle)
-                    if ($.ui.fancytree.getEventTargetType(event) ===
+                });
+                $("#echoSelection2").text(selKeys.join(", "));
+            },
+            click: function(event, data) {
+                // We should not toggle, if target was "checkbox", because this
+                // would result in double-toggle (i.e. no toggle)
+                if ($.ui.fancytree.getEventTargetType(event) ===
                         "title") {
-                        data.node.toggleSelected();
-                    }
-                },
-                keydown: function(event, data) {
-                    if (event.which === 32) {
-                        data.node.toggleSelected();
-                        return false;
-                    }
-                },
-                // The following options are only required, if we have more than one tree on one page:
-                cookieId: "fancytree-Cb2",
-                idPrefix: "fancytree-Cb2-"
-            });
-        }
-        /* Invoking Left Side Navigation Menu*/
+                    data.node.toggleSelected();
+                }
+            },
+            keydown: function(event, data) {
+                if (event.which === 32) {
+                    data.node.toggleSelected();
+                    return false;
+                }
+            },
+            // The following options are only required, if we have more than one tree on one page:
+            cookieId: "fancytree-Cb2",
+            idPrefix: "fancytree-Cb2-"
+        });
+    }
+    /* Invoking Left Side Navigation Menu*/
     initializeTree();
-    
+
     /* Function for search/filter functionality */
-    
+
     /*
      * Event handlers for our little demo interface
      */
-//    $("button[name=search]").keyup(function(e) {
-    
+    //    $("button[name=search]").keyup(function(e) {
+
     var onTreeSearch = function(event){
-        var tree = $("#tree").fancytree("getTree");
+        tree = $("#tree").fancytree("getTree");
         var n, opts = {
             leavesOnly: false,
             highlight: true,
             autoExpand: true
         }
         var match = $(event.target).val();
-        
+
         if (event && event.which === $.ui.keyCode.ESCAPE || $.trim(match) ===
-            "") {
-            $("input#btnResetSearch").click();
+                "") {
+            buttonReset(event);
             return;
-        } 
-            // Pass a string to perform case insensitive matching
-            n = tree.filterNodes(match, opts);
+        }
+        // Pass a string to perform case insensitive matching
+        n = tree.filterNodes(match, opts);
     }
-    
-    
-    
-    $("input#btnResetSearch").attr("disabled", false);
-    //.focus();
-    
-    
-    
-    $("input#btnResetSearch").click(function(e) {
+
+    var buttonReset = function(event) {
+        tree = $("#tree").fancytree("getTree");
         $("button[name=search]").val("");
         tree.clearFilter();
-    }).attr("disabled", true);
-    
-    
-    
+    }
+
+
+
     /* Function to Check all Nodes from the Tree View*/
     function btnCheckAll(e) {
         $("#tree").fancytree("getTree").visit(function(node) {
@@ -112,26 +107,24 @@
         var highestBox = 0;
         $('.ul.fancytree-container', this).each(function() {
             if ($(this).height() > highestBox) highestBox = $(
-                this).height();
+                    this).height();
         });
         $('.ul.fancytree-container', this).height(highestBox);
     });
-    
+
 
 </script>
 
 <div class="col-sm-3 col-md-2 sidebar">
     <div class="button-container">
-    <input name="search" placeholder="Search..." autocomplete="off" class="form-control" onkeyup="onTreeSearch(event)">
-    <input type="button" class="btn btn-default" id="btnResetSearch" value="Reset" onclick="btnReset()" style="margin-left: 4px;">
+        <input name="search" placeholder="Search..." autocomplete="off" class="form-control" onkeyup="onTreeSearch(event)">
+        <input type="button" class="btn btn-default" id="btnResetSearch" value="Reset" onclick="buttonReset(event)" style="margin-left: 4px;">
     </div>
     <div id="tree"></div>
     <div class="button-container1">
-    <input type="button" class="btn btn-default" value="Submit" onclick="btnSubmitAll()">
-    <input type="button" class="btn btn-default" value="Check All" onclick="btnCheckAll()">
-    <input type="button" class="btn btn-default" value="Un-Check All" onclick="btnUnCheckAll()">
-   
+        <input type="button" class="btn btn-default" value="Submit" onclick="btnSubmitAll()">
+        <input type="button" class="btn btn-default" value="Check All" onclick="btnCheckAll()">
+        <input type="button" class="btn btn-default" value="Un-Check All" onclick="btnUnCheckAll()">
+
     </div>
 </div>
-
-   
