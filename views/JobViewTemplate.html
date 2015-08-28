@@ -1,0 +1,88 @@
+<script>
+    var editor;
+    var loadJobViewData = function(){
+        editor = $('#jobViewGrid').DataTable( {
+            "ajax": 'data/jobViewData.json',
+            "pagingType": "simple_numbers",
+            "order": [],
+            "pageLength": 19,
+//            "stateSave": "true",
+            "info": false,
+            "lengthChange": false,
+            rowCallback: function ( row, data ) {
+                // Set the checked state of the checkbox in the table
+                $('input.editor-active', row).prop( 'checked', data.active == 1 );
+            },
+            columns: [
+                {
+                    data:   null,
+                    title: "",
+                    render: checkBoxRenderer,
+                    className: "dt-head-center dt-body-center",
+                    orderable: false
+                },
+                {   data: null,
+                    title: "",
+                    className: "dt-head-center dt-body-center"
+                },
+                {   data: "first_name",
+                    title: "First Name",
+                    className: "dt-head-center dt-body-center"
+                },
+                {   data: "last_name",
+                    title: "Last Name",
+                    className: "dt-head-center dt-body-center"
+                },
+                {
+                    data: "phone",
+                    title: "Phone",
+                    className: "dt-head-center dt-body-center"
+                },
+                {
+                    data: "city",
+                    title: "City",
+                    className: "dt-head-center dt-body-center"
+                },
+                {
+                    data: "zip",
+                    title: "Zip",
+                    className: "dt-head-center dt-body-center"
+                }
+            ],
+            "columnDefs":[
+                {
+                    targets: 1,
+                    defaultContent: "<button id='clickButton' onclick='buttonClick(event)'>Click</button>",
+                    searchable:false,
+                    orderable: false
+                }
+            ]
+        } );
+    }
+
+    var checkBoxRenderer = function ( data, type, row ) {
+        if ( type === 'display' ) {
+            return '<input type="checkbox" id="checkBox" class="editor-active" onclick="checkboxClick(event)">';
+        }
+        return data;
+    }
+
+    var checkboxClick = function(event){
+        var data = editor.row(event.target.parentNode.parentNode).data();
+        var str = data['active'] == 1 ? 'active' : 'inactive';
+        alert("Check box click " + data['first_name'] + ' ' + data['last_name'] + 'is ' + str );
+    }
+
+    var buttonClick = function(event){
+        var data = editor.row(event.target.parentNode.parentNode).data();
+        var str = data['active'] == 1 ? 'active' : 'inactive';
+        alert( "Button Click " + data['first_name'] + ' ' + data['last_name'] + 'is ' + str );
+    }
+
+</script>
+<div class="col-sm-9-2 col-sm-offset-3 col-md-10 col-md-offset-2 main jobView">
+                <h1 class="page-header">Job View</h1>
+    <div class="table-responsive">
+        <table cellpadding="0" cellspacing="0" border="0" class="display" id="jobViewGrid" width="100%"></table>
+    </div>
+</div>
